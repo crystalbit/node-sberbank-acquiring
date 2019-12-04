@@ -4,7 +4,7 @@ var qs = require('querystring');
 const ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
 const ACTIONS = {
     register: 'register.do',
-
+    getOrderStatusExtended: 'getOrderStatusExtended.do'
 }
 
 class Acquiring {
@@ -20,11 +20,22 @@ class Acquiring {
         return this.parse(response);
     }
 
+    /**
+     * Required one field - orderId OR orderNumber
+     * @param {string} orderId 
+     * @param {string} orderNumber 
+     */
+    async get(orderId, orderNumber = null) {
+        let data = this.buildData(orderId ? { orderId } : { orderNumber });
+        let response = await this.POST(ACTIONS.getOrderStatusExtended, data);
+        return this.parse(response);
+    }
+
     parse(response) {
         let status = response.status;
         if (status === 200) {
             let data = response.data;
-            if (data.errorCode) throw new Error(data.errorMessage);
+            if (+data.errorCode) throw new Error(data.errorMessage);
             return data;
         } else {
             throw new Error(`HTTP error ${status}`);
