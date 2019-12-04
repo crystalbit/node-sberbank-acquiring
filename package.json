@@ -1,0 +1,36 @@
+{
+  "name": "sberbank-acquiring",
+  "version": "1.0.0",
+  "description": "Библиотка для API интернет-эквайринга сбербанка",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/**/*.js --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crystalbit/node-sberbank-acquiring.git"
+  },
+  "keywords": [
+    "sberbank",
+    "acquiring",
+    "эквайринг",
+    "сбербанк"
+  ],
+  "author": "crystalbit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/crystalbit/node-sberbank-acquiring/issues"
+  },
+  "homepage": "https://github.com/crystalbit/node-sberbank-acquiring#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "qs": "^6.9.1"
+  }
+}
