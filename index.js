@@ -7,20 +7,40 @@ const ACTIONS = {
     getOrderStatusExtended: 'getOrderStatusExtended.do'
 }
 
-class Acquiring {
 
+/**
+ * Hey!
+ */
+class Acquiring {
+    /**
+     * Constructor
+     * @param {Object} credentials 
+     * @param {string} returnUrl - use macro {order} for ID of order
+     */
     constructor(credentials, returnUrl) {
         this.returnUrl = returnUrl;
         this.credentials = credentials;
     }
 
-    async register(orderNumber, amount) {
-        let data = this.buildData({ orderNumber, amount: amount * 100, returnUrl: this.returnUrl });
+    /**
+     * Creating new order
+     * @param {string} orderNumber 
+     * @param {number} amount
+     * @param {string} description 
+     */
+    async register(orderNumber, amount, description = '') {
+        let data = this.buildData({
+            orderNumber,
+            amount: amount * 100,
+            description,
+            returnUrl: this.returnUrl.replace(/\{order\}/g, orderNumber)
+        });
         let response = await this.POST(ACTIONS.register, data);
         return this.parse(response);
     }
 
     /**
+     * Get info on order
      * Required one field - orderId OR orderNumber
      * @param {string} orderId 
      * @param {string} orderNumber 
@@ -31,6 +51,10 @@ class Acquiring {
         return this.parse(response);
     }
 
+    /**
+     * Parse response data
+     * @param {Object} response 
+     */
     parse(response) {
         let status = response.status;
         if (status === 200) {
@@ -42,6 +66,11 @@ class Acquiring {
         }
     }
 
+    /**
+     * Send POST
+     * @param {string} action 
+     * @param {Object} data 
+     */
     async POST(action, data) {
         let queuer = await axios.post(
             ENTRY + action,
@@ -50,10 +79,13 @@ class Acquiring {
         return queuer;
     }
 
+    /**
+     * Add technical parameters to data
+     * @param {Object} parameters 
+     */
     buildData(parameters = {}) {
         return { ...parameters, ...this.credentials };
     }
-
 }
 
 module.exports = Acquiring;

@@ -18,7 +18,7 @@ describe('Basic Test', function() {
     var orderId;
 
     it('should do order', async function () {
-        let result = await acquiring.register(uuidv4().substr(0, 30), 1000);
+        let result = await acquiring.register(uuidv4().substr(0, 30), 1000, 'test order');
         expect(typeof result).to.be.equal('object');
         expect(typeof (result.orderId)).to.be.equal('string');
         expect(typeof (result.formUrl)).to.be.equal('string');
