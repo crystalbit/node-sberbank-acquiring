@@ -1,11 +1,11 @@
-var axios = require('axios').default;
-var qs = require('querystring');
+const axios = require('axios').default;
+const qs = require('querystring');
 
 const ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
 const ACTIONS = {
     register: 'register.do',
     getOrderStatusExtended: 'getOrderStatusExtended.do'
-}
+};
 
 
 /**
@@ -29,25 +29,46 @@ class Acquiring {
      * @param {string} description 
      */
     async register(orderNumber, amount, description = '') {
-        let data = this.buildData({
+        const data = this.buildData({
             orderNumber,
             amount: amount * 100,
             description,
             returnUrl: this.returnUrl.replace(/\{order\}/g, orderNumber)
         });
-        let response = await this.POST(ACTIONS.register, data);
+        const response = await this.POST(ACTIONS.register, data);
         return this.parse(response);
     }
 
     /**
+     * Checking if order exists and getting its status
+     * Provide only one value - for orderId OR for orderNumber
+     * @param {string|null} orderId 
+     * @param {string|null} orderNumber 
+     * @returns {number|null} status of the order or null unless it exists
+     * !!!  result can be 0 - it is REGISTERED_BUT_NOT_PAID status  !!!
+     * !!! always check with '===' whether it is null or isn't null !!!
+     */
+    async status(orderId, orderNumber = null) {
+        const SBER_ERROR_NO_SUCH_ORDER_ID = 6;
+        try {
+            const response = await this.get(orderId, orderNumber);
+            return response.orderStatus;
+        } catch (error) {
+            if (parseInt(error.sberErrorCode) === SBER_ERROR_NO_SUCH_ORDER_ID) return null;
+            throw error;
+        }
+    }
+
+    /**
      * Get info on order
-     * Required one field - orderId OR orderNumber
-     * @param {string} orderId 
-     * @param {string} orderNumber 
+     * Provide only one value - for orderId OR for orderNumber
+     * @param {string|null} orderId 
+     * @param {string|null} orderNumber
+     * @returns {Object} response
      */
     async get(orderId, orderNumber = null) {
-        let data = this.buildData(orderId ? { orderId } : { orderNumber });
-        let response = await this.POST(ACTIONS.getOrderStatusExtended, data);
+        const data = this.buildData(orderId ? { orderId } : { orderNumber });
+        const response = await this.POST(ACTIONS.getOrderStatusExtended, data);
         return this.parse(response);
     }
 
@@ -56,10 +77,14 @@ class Acquiring {
      * @param {Object} response 
      */
     parse(response) {
-        let status = response.status;
+        const status = response.status;
         if (status === 200) {
-            let data = response.data;
-            if (+data.errorCode) throw new Error(data.errorMessage);
+            const data = response.data;
+            if (parseInt(data.errorCode)) {
+                let error = new Error(data.errorMessage);
+                error.sberErrorCode = data.errorCode;
+                throw error;
+            }
             return data;
         } else {
             throw new Error(`HTTP error ${status}`);
@@ -72,7 +97,7 @@ class Acquiring {
      * @param {Object} data 
      */
     async POST(action, data) {
-        let queuer = await axios.post(
+        const queuer = await axios.post(
             ENTRY + action,
             qs.stringify(data)
         );
