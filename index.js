@@ -1,7 +1,8 @@
 const axios = require('axios').default;
 const qs = require('querystring');
 
-const ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
+const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/'; // TODO use it
+const ENTRY = 'https://securepayments.sberbank.ru/payment/rest/';
 const ACTIONS = {
     register: 'register.do',
     getOrderStatusExtended: 'getOrderStatusExtended.do'
