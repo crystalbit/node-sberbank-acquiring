@@ -32,7 +32,7 @@ class Acquiring {
     async register(orderNumber, amount, description = '') {
         const data = this.buildData({
             orderNumber,
-            amount: parseInt(amount * 100),
+            amount: Math.round(amount * 100),
             description,
             returnUrl: this.returnUrl.replace(/\{order\}/g, orderNumber)
         });
