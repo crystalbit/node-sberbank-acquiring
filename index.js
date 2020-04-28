@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 const qs = require('querystring');
 
-const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/'; // TODO use it
+const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
 const ENTRY = 'https://securepayments.sberbank.ru/payment/rest/';
 const ACTIONS = {
     register: 'register.do',
@@ -18,9 +18,10 @@ class Acquiring {
      * @param {Object} credentials 
      * @param {string} returnUrl - use macro {order} for ID of order
      */
-    constructor(credentials, returnUrl) {
+    constructor(credentials, returnUrl, test = false) {
         this.returnUrl = returnUrl;
         this.credentials = credentials;
+        this.entry = test ? TEST_ENTRY : ENTRY;
     }
 
     /**
@@ -99,7 +100,7 @@ class Acquiring {
      */
     async POST(action, data) {
         const queuer = await axios.post(
-            ENTRY + action,
+            this.entry + action,
             qs.stringify(data)
         );
         return queuer;
