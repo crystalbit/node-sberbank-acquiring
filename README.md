@@ -35,7 +35,7 @@ const status1 = await acquiring.status(orderId);
 const status2 = await acquiring.status(null, orderNumber);
 ```
 provide only orderId or orderNumber.
-returns null if order not exists or number status (see sberbank docs)
+returns null if order doesn't exist or status number (see sberbank docs)
 
 be careful that the result can be null if the order doesn't exist and also it can be 0 if the order is REGISTERED_BUT_NOT_PAID, use === to check.
 
@@ -52,5 +52,5 @@ Refund:
   const refundResult = await acquiring.refund(orderId, amount);
 ```
 
-`refundResult` be like `{ errorCode: '0', errorMessage: 'Успешно' }`
+`refundResult` example: `{ errorCode: '0', errorMessage: 'Успешно' }`
 
