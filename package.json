@@ -1,7 +1,7 @@
 {
   "name": "sberbank-acquiring",
   "version": "1.0.0",
-  "description": "Библиотка для API интернет-эквайринга сбербанка",
+  "description": "Acquiring library for sberbank acquiring API",
   "main": "index.js",
   "directories": {
     "test": "test"
