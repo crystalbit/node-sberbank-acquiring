@@ -20,7 +20,7 @@ Official API documentation: https://developer.sberbank.ru/doc/v1/acquiring/rest-
 
 ```javascript
 const Acquiring = require('sberbank-acquiring');
-const acquiring = new Acquiring({ userName: ..., password: ... }, 'https://success_link');
+const acquiring = new Acquiring({ userName: ..., password: ... }, 'https://success_link'[, true]);
 ```
 Set third unnecessary parameter to true to use test api entry (https://securepayments.sberbank.ru/payment/rest/ instead of https://3dsec.sberbank.ru/payment/rest/)
 
@@ -37,7 +37,7 @@ const status2 = await acquiring.status(null, orderNumber);
 provide only orderId or orderNumber.
 returns null if order not exists or number status (see sberbank docs)
 
-be careful that the result can be null if the order not exists and also it can be 0 if the order is REGISTERED_BUT_NOT_PAID, use === to check.
+be careful that the result can be null if the order doesn't exist and also it can be 0 if the order is REGISTERED_BUT_NOT_PAID, use === to check.
 
 Getting order info:
 ```javascript
@@ -46,3 +46,11 @@ const info2 = await acquiring.get(null, orderNumber);
 ```
 provide only orderId or orderNumber.
 returns object with information on the order
+
+Refund:
+```javascript
+  const refundResult = await acquiring.refund(orderId, amount);
+```
+
+`refundResult` be like `{ errorCode: '0', errorMessage: 'Успешно' }`
+
