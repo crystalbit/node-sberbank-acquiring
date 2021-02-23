@@ -1,6 +1,6 @@
 module.exports = {
-    credentials: {
-        userName: 'username',
-        password: 'password'
-    }
+  credentials: {
+    userName: 'username',
+    password: 'password',
+  }
 }

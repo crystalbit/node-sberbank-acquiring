@@ -6,6 +6,7 @@ const ENTRY = 'https://securepayments.sberbank.ru/payment/rest/';
 const ACTIONS = {
   register: 'register.do',
   getOrderStatusExtended: 'getOrderStatusExtended.do',
+  refund: 'refund.do',
 };
 
 
@@ -73,6 +74,26 @@ class Acquiring {
   async get(orderId, orderNumber = null) {
     const data = this.buildData(orderId ? { orderId } : { orderNumber });
     const response = await this.POST(ACTIONS.getOrderStatusExtended, data);
+    return this.parse(response);
+  }
+
+  /**
+   * Возврат
+   * @param {string} orderId Номер заказа в платежной системе.
+   * @param {number} amount Сумма платежа (500.23). 0 для возврата на всю сумму.
+   * @param {Object|null} jsonParams Дополнительные параметры запроса.
+   * @returns {Object} response
+   */
+  async refund(orderId, amount, jsonParams = null) {
+    const params = {
+      orderId,
+      amount: amount * 100,
+    };
+    if (jsonParams) {
+      params.jsonParams = JSON.stringify(jsonParams);
+    }
+    const data = this.buildData(params);
+    const response = await this.POST(ACTIONS.refund, data);
     return this.parse(response);
   }
 
