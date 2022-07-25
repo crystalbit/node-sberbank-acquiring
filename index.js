@@ -1,23 +1,34 @@
-const axios = require('axios').default;
-const qs = require('querystring');
+const axios = require("axios").default;
+const qs = require("querystring");
 
-const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
-const ENTRY = 'https://securepayments.sberbank.ru/payment/rest/';
+const TEST_ENTRY = "https://3dsec.sberbank.ru/payment/rest/";
+const ENTRY = "https://securepayments.sberbank.ru/payment/rest/";
 const ACTIONS = {
-  register: 'register.do',
-  getOrderStatusExtended: 'getOrderStatusExtended.do',
-  refund: 'refund.do',
+  register: "register.do",
+  getOrderStatusExtended: "getOrderStatusExtended.do",
+  refund: "refund.do",
 };
-
 
 /**
  * Hey!
  */
 class Acquiring {
   /**
+   * @typedef {Object} UsernamePasswordCredentials
+   * @property {string} userName - username
+   * @property {string} password - password
+   *
+   * @typedef {Object} TokenCredentials
+   * @property {string} token
+   *
+   * @typedef {UsernamePasswordCredentials | TokenCredentials} Credentials
+   */
+
+  /**
    * Constructor
-   * @param {Object} credentials 
+   * @param {Credentials} credentials
    * @param {string} returnUrl - use macro {order} for ID of order
+   * @param {boolean} test - use test entry
    */
   constructor(credentials, returnUrl, test = false) {
     this.returnUrl = returnUrl;
@@ -27,11 +38,11 @@ class Acquiring {
 
   /**
    * Creating new order
-   * @param {string} orderNumber 
+   * @param {string} orderNumber
    * @param {number} amount
-   * @param {string} description 
+   * @param {string} description
    */
-  async register(orderNumber, amount, description = '') {
+  async register(orderNumber, amount, description = "") {
     const data = this.buildData({
       orderNumber,
       amount: Math.round(amount * 100),
@@ -45,9 +56,9 @@ class Acquiring {
   /**
    * Checking if order exists and getting its status
    * Provide only one value - for orderId OR for orderNumber
-   * @param {string|null} orderId 
-   * @param {string|null} orderNumber 
-   * @returns {number|null} status of the order or null unless it exists
+   * @param {string|null} orderId
+   * @param {string|null} orderNumber
+   * @returns {Promise<number|null>} status of the order or null unless it exists
    * !!!  result can be 0 - it is REGISTERED_BUT_NOT_PAID status  !!!
    * !!! always check with '===' whether it is null or isn't null !!!
    */
@@ -67,9 +78,9 @@ class Acquiring {
   /**
    * Get info on order
    * Provide only one value - for orderId OR for orderNumber
-   * @param {string|null} orderId 
+   * @param {string|null} orderId
    * @param {string|null} orderNumber
-   * @returns {Object} response
+   * @returns {Promise<Object>} response
    */
   async get(orderId, orderNumber = null) {
     const data = this.buildData(orderId ? { orderId } : { orderNumber });
@@ -82,7 +93,7 @@ class Acquiring {
    * @param {string} orderId Номер заказа в платежной системе.
    * @param {number} amount Сумма платежа (500.23). 0 для возврата на всю сумму.
    * @param {Object|null} jsonParams Дополнительные параметры запроса.
-   * @returns {Object} response
+   * @returns {Promise<Object>} response
    */
   async refund(orderId, amount, jsonParams = null) {
     const params = {
@@ -99,7 +110,7 @@ class Acquiring {
 
   /**
    * Parse response data
-   * @param {Object} response 
+   * @param {Object} response
    */
   parse(response) {
     const status = response.status;
@@ -118,20 +129,17 @@ class Acquiring {
 
   /**
    * Send POST
-   * @param {string} action 
-   * @param {Object} data 
+   * @param {string} action
+   * @param {Object} data
    */
   async POST(action, data) {
-    const queuer = await axios.post(
-      this.entry + action,
-      qs.stringify(data),
-    );
+    const queuer = await axios.post(this.entry + action, qs.stringify(data));
     return queuer;
   }
 
   /**
    * Add technical parameters to data
-   * @param {Object} parameters 
+   * @param {Object} parameters
    */
   buildData(parameters = {}) {
     return { ...parameters, ...this.credentials };
