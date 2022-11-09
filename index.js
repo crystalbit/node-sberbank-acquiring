@@ -1,12 +1,12 @@
-const axios = require("axios").default;
-const qs = require("querystring");
+const axios = require('axios').default;
+const qs = require('querystring');
 
-const TEST_ENTRY = "https://3dsec.sberbank.ru/payment/rest/";
-const ENTRY = "https://securepayments.sberbank.ru/payment/rest/";
+const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
+const ENTRY = 'https://securepayments.sberbank.ru/payment/rest/';
 const ACTIONS = {
-  register: "register.do",
-  getOrderStatusExtended: "getOrderStatusExtended.do",
-  refund: "refund.do",
+  register: 'register.do',
+  getOrderStatusExtended: 'getOrderStatusExtended.do',
+  refund: 'refund.do',
 };
 
 /**
@@ -42,7 +42,7 @@ class Acquiring {
    * @param {number} amount
    * @param {string} description
    */
-  async register(orderNumber, amount, description = "") {
+  async register(orderNumber, amount, description = '') {
     const data = this.buildData({
       orderNumber,
       amount: Math.round(amount * 100),
