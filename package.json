@@ -26,12 +26,12 @@
   },
   "homepage": "https://github.com/crystalbit/node-sberbank-acquiring#readme",
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "^1.1.3",
     "fast-querystring": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.0",
     "mocha": "^10.0.0",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   }
 }

@@ -1,4 +1,4 @@
-const axios = require('axios').default;
+const axios = require('axios');
 const qs = require('fast-querystring');
 
 const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
