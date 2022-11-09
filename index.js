@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const qs = require('querystring');
+const qs = require('fast-querystring');
 
 const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
 const ENTRY = 'https://securepayments.sberbank.ru/payment/rest/';
@@ -133,8 +133,7 @@ class Acquiring {
    * @param {Object} data
    */
   async POST(action, data) {
-    const queuer = await axios.post(this.entry + action, qs.stringify(data));
-    return queuer;
+    return await axios.post(this.entry + action, qs.stringify(data));
   }
 
   /**
