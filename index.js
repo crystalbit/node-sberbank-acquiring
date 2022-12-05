@@ -10,7 +10,7 @@ const ACTIONS = {
 };
 
 /**
- * @typedef {Object} Credentials
+ * @typedef {object} Credentials
  * @property {string} userName - username
  * @property {string} password - password
  */
@@ -32,9 +32,11 @@ class Acquiring {
    * @param {string} orderNumber
    * @param {number} amount
    * @param {string} description
+   * @param {object} otherParams
    */
-  async register(orderNumber, amount, description = '') {
+  async register(orderNumber, amount, description = '', otherParams) {
     const data = this.buildData({
+      ...otherParams,
       orderNumber,
       amount: Math.round(amount * 100),
       description,
@@ -71,7 +73,7 @@ class Acquiring {
    * Provide only one value - for orderId OR for orderNumber
    * @param {string|null} orderId
    * @param {string|null} orderNumber
-   * @returns {Promise<Object>} response
+   * @returns {Promise<object>} response
    */
   async get(orderId, orderNumber = null) {
     const data = this.buildData(orderId ? { orderId } : { orderNumber });
@@ -83,8 +85,8 @@ class Acquiring {
    * Возврат
    * @param {string} orderId Номер заказа в платежной системе.
    * @param {number} amount Сумма платежа (500.23). 0 для возврата на всю сумму.
-   * @param {Object|null} jsonParams Дополнительные параметры запроса.
-   * @returns {Promise<Object>} response
+   * @param {object|null} jsonParams Дополнительные параметры запроса.
+   * @returns {Promise<object>} response
    */
   async refund(orderId, amount, jsonParams = null) {
     const params = {
@@ -101,7 +103,7 @@ class Acquiring {
 
   /**
    * Parse response data
-   * @param {Object} response
+   * @param {object} response
    */
   parse(response) {
     const status = response.status;
@@ -121,7 +123,7 @@ class Acquiring {
   /**
    * Send POST
    * @param {string} action
-   * @param {Object} data
+   * @param {object} data
    */
   async POST(action, data) {
     return await axios.post(this.entry + action, qs.stringify(data));
@@ -129,7 +131,7 @@ class Acquiring {
 
   /**
    * Add technical parameters to data
-   * @param {Object} parameters
+   * @param {object} parameters
    */
   buildData(parameters = {}) {
     return { ...parameters, ...this.credentials };
