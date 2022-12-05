@@ -10,22 +10,13 @@ const ACTIONS = {
 };
 
 /**
- * Hey!
+ * @typedef {Object} Credentials
+ * @property {string} userName - username
+ * @property {string} password - password
  */
+
 class Acquiring {
   /**
-   * @typedef {Object} UsernamePasswordCredentials
-   * @property {string} userName - username
-   * @property {string} password - password
-   *
-   * @typedef {Object} TokenCredentials
-   * @property {string} token
-   *
-   * @typedef {UsernamePasswordCredentials | TokenCredentials} Credentials
-   */
-
-  /**
-   * Constructor
    * @param {Credentials} credentials
    * @param {string} returnUrl - use macro {order} for ID of order
    * @param {boolean} test - use test entry
