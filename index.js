@@ -8,6 +8,7 @@ const ACTIONS = {
   getOrderStatusExtended: 'getOrderStatusExtended.do',
   refund: 'refund.do',
   getBindings: 'getBindings.do',
+  unBindCard: 'unBindCard.do',
 };
 
 /**
@@ -106,7 +107,7 @@ class Acquiring {
    * Запрос списка всех связок клиента
    * @param {string} clientId Номер (идентификатор) клиента в системе магазина.
    * @param {"C"|"I"|"R"|"CR"|undefined} bindingType Тип связки.
-   * @param {number|undefined} bindingId Идентификатор связки.
+   * @param {string|undefined} bindingId Идентификатор связки.
    * @returns {Promise<object>} response
    */
   async getBindings(clientId, bindingType = 'C', bindingId) {
@@ -118,6 +119,17 @@ class Acquiring {
 
     const data = this.buildData(params);
     const response = await this.POST(ACTIONS.getBindings, data);
+    return this.parse(response);
+  }
+
+  /**
+   * Запрос деактивации связки
+   * @param {string} bindingId Идентификатор связки.
+   * @returns {Promise<object>} response
+   */
+  async unBindCard(bindingId) {
+    const data = this.buildData({ bindingId });
+    const response = await this.POST(ACTIONS.unBindCard, data);
     return this.parse(response);
   }
 

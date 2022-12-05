@@ -56,11 +56,18 @@ declare class Acquiring {
    * @param bindingId Идентификатор связки.
    * @returns response
    */
-  async getBindings(
+  getBindings(
     clientId: string,
     bindingType: 'C' | 'I' | 'R' | 'CR' = 'C',
-    bindingId?: number
+    bindingId?: string
   ): Promise<any>;
+
+  /**
+   * Запрос деактивации связки
+   * @param bindingId Идентификатор связки.
+   * @returns response
+   */
+  unBindCard(bindingId: string): Promise<any>;
 
   /**
    * Parse response data
