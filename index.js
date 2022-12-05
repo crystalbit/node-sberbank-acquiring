@@ -34,7 +34,7 @@ class Acquiring {
    * @param {string} description
    * @param {object} otherParams
    */
-  async register(orderNumber, amount, description = '', otherParams) {
+  async register(orderNumber, amount, description = '', otherParams = {}) {
     const data = this.buildData({
       ...otherParams,
       orderNumber,

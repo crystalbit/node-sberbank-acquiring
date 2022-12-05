@@ -18,7 +18,8 @@ declare class Acquiring {
   register(
     orderNumber: string,
     amount: number,
-    description?: string
+    description?: string,
+    otherParams?: object
   ): Promise<any>;
 
   /**
