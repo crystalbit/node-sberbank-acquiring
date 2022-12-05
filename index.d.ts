@@ -25,7 +25,7 @@ declare class Acquiring {
   /**
    * Checking if order exists and getting its status
    * Provide only one value - for orderId OR for orderNumber
-   * @returns  status of the order or null unless it exists
+   * @returns status of the order or null unless it exists
    * !!!  result can be 0 - it is REGISTERED_BUT_NOT_PAID status  !!!
    * !!! always check with '===' whether it is null or isn't null !!!
    */
@@ -36,7 +36,7 @@ declare class Acquiring {
    * Provide only one value - for orderId OR for orderNumber
    * @param orderId
    * @param orderNumber
-   * @returns  response
+   * @returns response
    */
   get(orderId: string | null, orderNumber?: string): Promise<any>;
 
@@ -48,6 +48,19 @@ declare class Acquiring {
    * @returns response
    */
   refund(orderId: string, amount: number, jsonParams?: object): Promise<any>;
+
+  /**
+   * Запрос списка всех связок клиента
+   * @param clientId Номер (идентификатор) клиента в системе магазина.
+   * @param bindingType Тип связки.
+   * @param bindingId Идентификатор связки.
+   * @returns response
+   */
+  async getBindings(
+    clientId: string,
+    bindingType: 'C' | 'I' | 'R' | 'CR' = 'C',
+    bindingId?: number
+  ): Promise<any>;
 
   /**
    * Parse response data

@@ -7,6 +7,7 @@ const ACTIONS = {
   register: 'register.do',
   getOrderStatusExtended: 'getOrderStatusExtended.do',
   refund: 'refund.do',
+  getBindings: 'getBindings.do',
 };
 
 /**
@@ -98,6 +99,25 @@ class Acquiring {
     }
     const data = this.buildData(params);
     const response = await this.POST(ACTIONS.refund, data);
+    return this.parse(response);
+  }
+
+  /**
+   * Запрос списка всех связок клиента
+   * @param {string} clientId Номер (идентификатор) клиента в системе магазина.
+   * @param {"C"|"I"|"R"|"CR"|undefined} bindingType Тип связки.
+   * @param {number|undefined} bindingId Идентификатор связки.
+   * @returns {Promise<object>} response
+   */
+  async getBindings(clientId, bindingType = 'C', bindingId) {
+    const params = {
+      clientId,
+      bindingType,
+      bindingId,
+    };
+
+    const data = this.buildData(params);
+    const response = await this.POST(ACTIONS.getBindings, data);
     return this.parse(response);
   }
 
