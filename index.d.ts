@@ -85,4 +85,4 @@ declare class Acquiring {
   buildData(parameters?: object): any;
 }
 
-export default Acquiring;
+export = Acquiring;
