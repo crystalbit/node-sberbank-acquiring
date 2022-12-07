@@ -55,6 +55,14 @@ const info2 = await acquiring.get(null, orderNumber);
 provide only orderId or orderNumber.
 returns object with information on the order
 
+Refund:
+
+```javascript
+const refundResult = await acquiring.refund(orderId, amount);
+```
+
+`refundResult` example: `{ errorCode: '0', errorMessage: 'Успешно' }`
+
 Get bindings:
 
 ```javascript
