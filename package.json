@@ -1,6 +1,6 @@
 {
   "name": "sberbank-acquiring",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Acquiring library for sberbank acquiring API",
   "main": "index.js",
   "types": "index.d.ts",
