@@ -16,7 +16,6 @@ const ACTIONS = {
 
 // Support Russian Trusted Root CA and Russian Trusted Sub CA certificates
 axios.defaults.httpsAgent = new https.Agent({
-  keepAlive: true,
   ca: [
     fs.readFileSync(
       path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')
