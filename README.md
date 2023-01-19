@@ -12,7 +12,7 @@ Supports only one-step payments without OFD
 
 Supports test api entry
 
-Official API documentation: https://3dsec.sberbank.ru/techportal/doku.php/main_page
+Official API documentation: https://securepayments.sberbank.ru/wiki/doku.php/main_page
 
 ## Install
 
