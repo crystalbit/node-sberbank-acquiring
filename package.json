@@ -36,6 +36,8 @@
     "uuid": "^9.0.0"
   },
   "files": [
-    "index.d.ts"
+    "index.d.ts",
+    "russian_trusted_root_ca_pem.crt",
+    "russian_trusted_sub_ca_pem.crt"
   ]
 }

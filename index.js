@@ -1,5 +1,8 @@
 const axios = require('axios');
 const qs = require('fast-querystring');
+const fs = require('fs');
+const https = require('https');
+const path = require('path');
 
 const TEST_ENTRY = 'https://3dsec.sberbank.ru/payment/rest/';
 const ENTRY = 'https://securepayments.sberbank.ru/payment/rest/';
@@ -10,6 +13,18 @@ const ACTIONS = {
   getBindings: 'getBindings.do',
   unBindCard: 'unBindCard.do',
 };
+
+// Support Russian Trusted Root CA and Russian Trusted Sub CA certificates
+axios.defaults.httpsAgent = new https.Agent({
+  ca: [
+    fs.readFileSync(
+      path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')
+    ),
+    fs.readFileSync(
+      path.resolve(__dirname, './russian_trusted_sub_ca_pem.crt')
+    ),
+  ],
+});
 
 /**
  * @typedef {object} Credentials
