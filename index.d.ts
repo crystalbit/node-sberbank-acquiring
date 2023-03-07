@@ -52,13 +52,13 @@ declare class Acquiring {
   /**
    * Запрос списка всех связок клиента
    * @param clientId Номер (идентификатор) клиента в системе магазина.
-   * @param bindingType Тип связки.
+   * @param bindingType Тип связки. Значение по умолчанию 'C'.
    * @param bindingId Идентификатор связки.
    * @returns response
    */
   getBindings(
     clientId: string,
-    bindingType: 'C' | 'I' | 'R' | 'CR' = 'C',
+    bindingType?: 'C' | 'I' | 'R' | 'CR',
     bindingId?: string
   ): Promise<any>;
 
