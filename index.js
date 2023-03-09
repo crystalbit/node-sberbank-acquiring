@@ -121,7 +121,7 @@ class Acquiring {
   /**
    * Запрос списка всех связок клиента
    * @param {string} clientId Номер (идентификатор) клиента в системе магазина.
-   * @param {"C"|"I"|"R"|"CR"|undefined} bindingType Тип связки.
+   * @param {"C"|"I"|"R"|"CR"|undefined} bindingType Тип связки. Значение по умолчанию 'C'.
    * @param {string|undefined} bindingId Идентификатор связки.
    * @returns {Promise<object>} response
    */
