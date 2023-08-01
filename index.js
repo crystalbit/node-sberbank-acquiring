@@ -12,6 +12,7 @@ const ACTIONS = {
   refund: 'refund.do',
   getBindings: 'getBindings.do',
   unBindCard: 'unBindCard.do',
+  paymentOrderBinding: 'paymentOrderBinding.do',
 };
 
 // Support Russian Trusted Root CA and Russian Trusted Sub CA certificates
@@ -63,6 +64,23 @@ class Acquiring {
     return this.parse(response);
   }
 
+      /**
+   * Creating auto payment request 
+   * @param {string} mdOrder
+   * @param {number} bindingId
+   * @param {string} ip
+   */
+      async paymentOrderBinding(mdOrder, bindingId, ip) {
+        const data = this.buildData({
+          mdOrder,
+          bindingId,
+          ip
+        });
+  
+        const response = await this.POST(ACTIONS.paymentOrderBinding, data);
+        return this.parse(response);
+      }
+      
   /**
    * Checking if order exists and getting its status
    * Provide only one value - for orderId OR for orderNumber
