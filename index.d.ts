@@ -22,6 +22,19 @@ declare class Acquiring {
     otherParams?: object
   ): Promise<any>;
 
+    /**
+   * Запрос проведения оплаты по связкам
+   * @param mdOrder Номер заказа в платёжном шлюзе. Уникален в пределах платёжного шлюза. Номер заказа который отдает register.
+   * @param bindingId Идентификатор созданной ранее связки.
+   * @param ip IP-адрес покупателя. IPv6 поддерживается во всех запросах (до 39 символов).
+   * @returns response
+   */
+    paymentOrderBinding(
+      mdOrder: string,
+      bindingId: string,
+      ip: string,
+    ): Promise<any>;
+
   /**
    * Checking if order exists and getting its status
    * Provide only one value - for orderId OR for orderNumber
