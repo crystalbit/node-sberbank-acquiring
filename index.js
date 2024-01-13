@@ -1,4 +1,4 @@
-const axios = require('axios');
+const axios = require('axios').default;
 const qs = require('fast-querystring');
 const fs = require('fs');
 const https = require('https');
@@ -15,16 +15,18 @@ const ACTIONS = {
   paymentOrderBinding: 'paymentOrderBinding.do',
 };
 
-// Support Russian Trusted Root CA and Russian Trusted Sub CA certificates
-axios.defaults.httpsAgent = new https.Agent({
-  ca: [
-    fs.readFileSync(
-      path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')
-    ),
-    fs.readFileSync(
-      path.resolve(__dirname, './russian_trusted_sub_ca_pem.crt')
-    ),
-  ],
+const axiosInstance = axios.create({
+  httpsAgent: new https.Agent({
+    // Support Russian Trusted Root CA and Russian Trusted Sub CA certificates
+    ca: [
+      fs.readFileSync(
+        path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')
+      ),
+      fs.readFileSync(
+        path.resolve(__dirname, './russian_trusted_sub_ca_pem.crt')
+      ),
+    ],
+  }),
 });
 
 /**
@@ -64,23 +66,23 @@ class Acquiring {
     return this.parse(response);
   }
 
-      /**
-   * Creating auto payment request 
+  /**
+   * Creating auto payment request
    * @param {string} mdOrder
    * @param {number} bindingId
    * @param {string} ip
    */
-      async paymentOrderBinding(mdOrder, bindingId, ip) {
-        const data = this.buildData({
-          mdOrder,
-          bindingId,
-          ip
-        });
-  
-        const response = await this.POST(ACTIONS.paymentOrderBinding, data);
-        return this.parse(response);
-      }
-      
+  async paymentOrderBinding(mdOrder, bindingId, ip) {
+    const data = this.buildData({
+      mdOrder,
+      bindingId,
+      ip,
+    });
+
+    const response = await this.POST(ACTIONS.paymentOrderBinding, data);
+    return this.parse(response);
+  }
+
   /**
    * Checking if order exists and getting its status
    * Provide only one value - for orderId OR for orderNumber
@@ -191,7 +193,7 @@ class Acquiring {
    * @param {object} data
    */
   async POST(action, data) {
-    return await axios.post(this.entry + action, qs.stringify(data));
+    return await axiosInstance.post(this.entry + action, qs.stringify(data));
   }
 
   /**
