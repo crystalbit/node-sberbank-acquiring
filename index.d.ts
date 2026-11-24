@@ -5,6 +5,9 @@ interface Credentials {
 
 // TODO Temp
 declare class Acquiring {
+  /** PEM buffers of the Russian Trusted Root/Sub CA (Sberbank hosts are signed by them). */
+  static russianTrustedCa: Buffer[];
+
   /**
    * @param credentials
    * @param returnUrl - use macro {order} for ID of order

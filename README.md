@@ -74,3 +74,14 @@ Unbind card:
 ```javascript
 const unBindCardResult = await acquiring.unBindCard(bindingId);
 ```
+
+
+## 1.3.0
+
+- The library no longer modifies the global `axios.defaults.httpsAgent`. It sends requests through its own axios
+  instance whose agent trusts the Russian Trusted Root/Sub CA (Sberbank hosts are signed by them). Previously, when
+  npm deduplicated axios with the application's copy, every other HTTPS request of the application trusted only
+  these two CAs and failed for regular hosts.
+- `Acquiring.russianTrustedCa` — PEM buffers of the Russian Trusted Root/Sub CA, for applications that need them for
+  other hosts: `new https.Agent({ ca: [...tls.rootCertificates, ...Acquiring.russianTrustedCa] })`.
+- axios ^1.21.1.

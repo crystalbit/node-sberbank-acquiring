@@ -15,16 +15,17 @@ const ACTIONS = {
   paymentOrderBinding: 'paymentOrderBinding.do',
 };
 
-// Support Russian Trusted Root CA and Russian Trusted Sub CA certificates
-axios.defaults.httpsAgent = new https.Agent({
-  ca: [
-    fs.readFileSync(
-      path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')
-    ),
-    fs.readFileSync(
-      path.resolve(__dirname, './russian_trusted_sub_ca_pem.crt')
-    ),
-  ],
+// Russian Trusted Root CA and Russian Trusted Sub CA certificates (Sberbank hosts are signed by them)
+const RUSSIAN_TRUSTED_CA = [
+  fs.readFileSync(path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')),
+  fs.readFileSync(path.resolve(__dirname, './russian_trusted_sub_ca_pem.crt')),
+];
+
+// Own axios instance: the library must not touch the global axios.defaults. Previously it set
+// axios.defaults.httpsAgent, which (when npm dedupes axios with the application's copy) made every other
+// HTTPS request of the application trust ONLY the Russian CAs and fail for regular hosts.
+const http = axios.create({
+  httpsAgent: new https.Agent({ ca: RUSSIAN_TRUSTED_CA }),
 });
 
 /**
@@ -191,7 +192,7 @@ class Acquiring {
    * @param {object} data
    */
   async POST(action, data) {
-    return await axios.post(this.entry + action, qs.stringify(data));
+    return await http.post(this.entry + action, qs.stringify(data));
   }
 
   /**
@@ -202,5 +203,11 @@ class Acquiring {
     return { ...parameters, ...this.credentials };
   }
 }
+
+/**
+ * PEM buffers of the Russian Trusted Root/Sub CA — for applications that need them for other hosts
+ * (e.g. `new https.Agent({ ca: [...tls.rootCertificates, ...Acquiring.russianTrustedCa] })`).
+ */
+Acquiring.russianTrustedCa = RUSSIAN_TRUSTED_CA;
 
 module.exports = Acquiring;
