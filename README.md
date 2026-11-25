@@ -82,6 +82,10 @@ const unBindCardResult = await acquiring.unBindCard(bindingId);
   instance whose agent trusts the Russian Trusted Root/Sub CA (Sberbank hosts are signed by them). Previously, when
   npm deduplicated axios with the application's copy, every other HTTPS request of the application trusted only
   these two CAs and failed for regular hosts.
+- New optional 4th constructor argument `options`: `{ ca }` to trust other CA certificates instead of the bundled
+  ones (for example after the Russian CAs are reissued — the bundled Root is valid until 2032, the Sub CA until
+  2027-03-06), or `{ httpsAgent }` to pass a complete custom agent:
+  `new Acquiring(credentials, returnUrl, false, { ca: [fs.readFileSync('new_root.pem')] })`.
 - `Acquiring.russianTrustedCa` — PEM buffers of the Russian Trusted Root/Sub CA, for applications that need them for
   other hosts: `new https.Agent({ ca: [...tls.rootCertificates, ...Acquiring.russianTrustedCa] })`.
 - axios ^1.21.1.

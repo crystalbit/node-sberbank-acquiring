@@ -39,11 +39,19 @@ class Acquiring {
    * @param {Credentials} credentials
    * @param {string} returnUrl - use macro {order} for ID of order
    * @param {boolean} test - use test entry
+   * @param {object} [options]
+   * @param {Array<string|Buffer>} [options.ca] - CA certificates to trust instead of the bundled Russian Trusted
+   *   Root/Sub CA (e.g. when they are reissued)
+   * @param {import('https').Agent} [options.httpsAgent] - a complete custom HTTPS agent (takes precedence over `ca`)
    */
-  constructor(credentials, returnUrl, test = false) {
+  constructor(credentials, returnUrl, test = false, options = {}) {
     this.returnUrl = returnUrl;
     this.credentials = credentials;
     this.entry = test ? TEST_ENTRY : ENTRY;
+    const { ca, httpsAgent } = options || {};
+    this.http = httpsAgent || ca
+      ? axios.create({ httpsAgent: httpsAgent || new https.Agent({ ca }) })
+      : http;
   }
 
   /**
@@ -192,7 +200,7 @@ class Acquiring {
    * @param {object} data
    */
   async POST(action, data) {
-    return await http.post(this.entry + action, qs.stringify(data));
+    return await this.http.post(this.entry + action, qs.stringify(data));
   }
 
   /**
