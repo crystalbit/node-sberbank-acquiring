@@ -76,9 +76,9 @@ const unBindCardResult = await acquiring.unBindCard(bindingId);
 ```
 
 
-## 1.3.0
+## 2.0.0
 
-**Behaviour changes — please read when upgrading:**
+**Breaking changes — please read when upgrading from 1.x:**
 
 - The library no longer modifies the global `axios.defaults.httpsAgent` (fixes #16). Previously it replaced the
   global agent with one that trusts *only* the Russian Trusted Root/Sub CA, which broke other HTTPS requests of the
@@ -88,6 +88,7 @@ const unBindCardResult = await acquiring.unBindCard(bindingId);
 - Requests now go through the library's own axios instance (`acquiring.http`), so interceptors, mocks
   (e.g. `axios-mock-adapter` on the global axios), headers, proxy or timeout set on the global axios after loading the
   library no longer apply to its requests. Attach them to `acquiring.http` instead (`nock` keeps working).
+- The typings now reference Node types (`https.Agent`, `Buffer`), so TypeScript projects need `@types/node`.
 
 **New:**
 
@@ -97,6 +98,5 @@ const unBindCardResult = await acquiring.unBindCard(bindingId);
     `new Acquiring(credentials, returnUrl, false, { ca: [fs.readFileSync('new_root.pem')] })`;
   - `{ httpsAgent }` — a complete custom HTTPS agent. Passing both, or an empty `ca`, throws.
 - `Acquiring.russianTrustedCa` — PEM buffers of the bundled CAs.
-- Types `Acquiring.Options` and `Acquiring.AcquiringCredentials`. The typings now reference Node types
-  (`https.Agent`, `Buffer`), so TypeScript projects need `@types/node`.
+- Types `Acquiring.Options` and `Acquiring.AcquiringCredentials`.
 - axios ^1.21.1.
