@@ -1,16 +1,32 @@
+import type { Agent } from 'https';
+
 interface Credentials {
   userName: string;
   password: string;
 }
 
+interface AcquiringOptions {
+  /** CA certificate(s) to trust instead of the bundled Russian Trusted Root/Sub CA (e.g. when they are reissued). */
+  ca?: string | Buffer | Array<string | Buffer>;
+  /** A complete custom HTTPS agent. Do not combine with `ca`. */
+  httpsAgent?: Agent;
+}
+
 // TODO Temp
 declare class Acquiring {
+  /** PEM buffers of the Russian Trusted Root/Sub CA (Sberbank hosts are signed by them). */
+  static russianTrustedCa: Buffer[];
+
   /**
    * @param credentials
    * @param returnUrl - use macro {order} for ID of order
    * @param test - use test entry
+   * @param options - custom CA certificates or HTTPS agent
    */
-  constructor(credentials: Credentials, returnUrl: string, test?: boolean);
+  constructor(credentials: Credentials, returnUrl: string, test?: boolean, options?: AcquiringOptions);
+
+  /** The axios instance used for requests (attach interceptors here if needed). */
+  http: any;
 
   /**
    * Creating new order
@@ -96,6 +112,11 @@ declare class Acquiring {
    * Add technical parameters to data
    */
   buildData(parameters?: object): any;
+}
+
+declare namespace Acquiring {
+  export type Options = AcquiringOptions;
+  export type AcquiringCredentials = Credentials;
 }
 
 export = Acquiring;

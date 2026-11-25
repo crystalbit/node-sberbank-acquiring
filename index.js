@@ -15,16 +15,17 @@ const ACTIONS = {
   paymentOrderBinding: 'paymentOrderBinding.do',
 };
 
-// Support Russian Trusted Root CA and Russian Trusted Sub CA certificates
-axios.defaults.httpsAgent = new https.Agent({
-  ca: [
-    fs.readFileSync(
-      path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')
-    ),
-    fs.readFileSync(
-      path.resolve(__dirname, './russian_trusted_sub_ca_pem.crt')
-    ),
-  ],
+// Russian Trusted Root CA and Russian Trusted Sub CA certificates (Sberbank hosts are signed by them)
+const RUSSIAN_TRUSTED_CA = [
+  fs.readFileSync(path.resolve(__dirname, './russian_trusted_root_ca_pem.crt')),
+  fs.readFileSync(path.resolve(__dirname, './russian_trusted_sub_ca_pem.crt')),
+];
+
+// Own axios instance: the library must not touch the global axios.defaults. Previously it set
+// axios.defaults.httpsAgent, which (when npm dedupes axios with the application's copy) made every other
+// HTTPS request of the application trust ONLY the Russian CAs and fail for regular hosts.
+const http = axios.create({
+  httpsAgent: new https.Agent({ ca: RUSSIAN_TRUSTED_CA }),
 });
 
 /**
@@ -38,11 +39,26 @@ class Acquiring {
    * @param {Credentials} credentials
    * @param {string} returnUrl - use macro {order} for ID of order
    * @param {boolean} test - use test entry
+   * @param {object} [options]
+   * @param {Array<string|Buffer>} [options.ca] - CA certificates to trust instead of the bundled Russian Trusted
+   *   Root/Sub CA (e.g. when they are reissued)
+   * @param {import('https').Agent} [options.httpsAgent] - a complete custom HTTPS agent (takes precedence over `ca`)
    */
-  constructor(credentials, returnUrl, test = false) {
+  constructor(credentials, returnUrl, test = false, options = {}) {
     this.returnUrl = returnUrl;
     this.credentials = credentials;
     this.entry = test ? TEST_ENTRY : ENTRY;
+    const { ca, httpsAgent } = options || {};
+    if (ca !== undefined && ca !== null) {
+      if (httpsAgent) throw new TypeError('Pass either options.ca or options.httpsAgent, not both');
+      if (Array.isArray(ca) ? ca.length === 0 : !ca) {
+        throw new TypeError('options.ca must be a non-empty certificate or list of certificates');
+      }
+    }
+    // Requests use this axios instance; attach interceptors here if needed (acquiring.http.interceptors...).
+    this.http = httpsAgent || ca
+      ? axios.create({ httpsAgent: httpsAgent || new https.Agent({ ca }) })
+      : http;
   }
 
   /**
@@ -191,7 +207,7 @@ class Acquiring {
    * @param {object} data
    */
   async POST(action, data) {
-    return await axios.post(this.entry + action, qs.stringify(data));
+    return await this.http.post(this.entry + action, qs.stringify(data));
   }
 
   /**
@@ -202,5 +218,11 @@ class Acquiring {
     return { ...parameters, ...this.credentials };
   }
 }
+
+/**
+ * PEM buffers of the Russian Trusted Root/Sub CA — for applications that need them for other hosts
+ * (e.g. `new https.Agent({ ca: [...tls.rootCertificates, ...Acquiring.russianTrustedCa] })`).
+ */
+Acquiring.russianTrustedCa = RUSSIAN_TRUSTED_CA;
 
 module.exports = Acquiring;
