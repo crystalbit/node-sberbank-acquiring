@@ -49,6 +49,13 @@ class Acquiring {
     this.credentials = credentials;
     this.entry = test ? TEST_ENTRY : ENTRY;
     const { ca, httpsAgent } = options || {};
+    if (ca !== undefined && ca !== null) {
+      if (httpsAgent) throw new TypeError('Pass either options.ca or options.httpsAgent, not both');
+      if (Array.isArray(ca) ? ca.length === 0 : !ca) {
+        throw new TypeError('options.ca must be a non-empty certificate or list of certificates');
+      }
+    }
+    // Requests use this axios instance; attach interceptors here if needed (acquiring.http.interceptors...).
     this.http = httpsAgent || ca
       ? axios.create({ httpsAgent: httpsAgent || new https.Agent({ ca }) })
       : http;

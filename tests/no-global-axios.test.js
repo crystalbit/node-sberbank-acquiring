@@ -17,21 +17,36 @@ describe('axios isolation', () => {
     Acquiring.russianTrustedCa.forEach(ca => expect(String(ca)).to.contain('BEGIN CERTIFICATE'));
   });
 
-  it('sends requests through its own axios instance', async () => {
+  it('sends requests through its own axios instance (a global interceptor is not called)', async () => {
     const Acquiring = require('../index.js');
-    const acquiring = new Acquiring({ userName: 'u', password: 'p' }, 'https://example.com/{order}', true);
-    let seen;
     const http = require('http');
-    // intercept: point entry to a local HTTP server and capture the request config through an adapter
-    const instance = Object.getPrototypeOf(acquiring).constructor;
-    expect(instance).to.equal(Acquiring);
+    let globalInterceptorCalls = 0;
+    const id = axios.interceptors.request.use((config) => { globalInterceptorCalls += 1; return config; });
+    let seen;
     const srv = http.createServer((q, r) => { seen = q.url; r.setHeader('content-type', 'application/json'); r.end('{"errorCode":"0"}'); });
     await new Promise(rs => srv.listen(0, rs));
-    acquiring.entry = 'http://127.0.0.1:' + srv.address().port + '/payment/rest/';
-    const res = await acquiring.POST('register.do', { a: 1 });
-    srv.close();
-    expect(seen).to.equal('/payment/rest/register.do');
-    expect(res.data).to.deep.equal({ errorCode: '0' });
+    try {
+      const acquiring = new Acquiring({ userName: 'u', password: 'p' }, 'https://example.com/{order}', true);
+      acquiring.entry = 'http://127.0.0.1:' + srv.address().port + '/payment/rest/';
+      const res = await acquiring.POST('register.do', { a: 1 });
+      expect(seen).to.equal('/payment/rest/register.do');
+      expect(res.data).to.deep.equal({ errorCode: '0' });
+      expect(globalInterceptorCalls).to.equal(0);
+    } finally {
+      axios.interceptors.request.eject(id);
+      srv.close();
+    }
+  });
+
+  it('rejects an empty ca and ca combined with httpsAgent', () => {
+    const Acquiring = require('../index.js');
+    const https = require('https');
+    const make = options => () => new Acquiring({ userName: 'u', password: 'p' }, 'https://example.com/{order}', false, options);
+    expect(make({ ca: [] })).to.throw(TypeError);
+    expect(make({ ca: '' })).to.throw(TypeError);
+    expect(make({ ca: ['x'], httpsAgent: new https.Agent() })).to.throw(TypeError);
+    expect(make(null)).to.not.throw();
+    expect(make({})).to.not.throw();
   });
 
   it('uses the bundled Russian CAs by default', () => {
